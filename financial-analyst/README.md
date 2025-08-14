@@ -15,7 +15,6 @@ A powerful financial analysis tool that integrates with Claude Desktop using Mod
 1. **Python 3.12** or later
 2. **Conda** for environment management
 3. **Claude Desktop** application
-4. **Ollama** for running Deepseek-R1 locally
 
 ## Installation
 
@@ -110,3 +109,4 @@ Contributions are welcome! Please:
 1. Fork the repository
 2. Create a feature branch
 3. Submit a pull request
+
