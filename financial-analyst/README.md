@@ -1,85 +1,112 @@
-# MCP-powered Financial Analyst using CrewAI and Deepseek-R1
+# Financial Analyst for Claude Desktop
 
-This project implements a financial analysis agentic workflow that analyzes stock market data and provides insights.
+A powerful financial analysis tool that integrates with Claude Desktop using Model Context Protocol (MCP). This project helps you analyze stock market data and generate visualizations through natural language queries.
 
-We use:
-- CrewAI for multi-agent orchestration.
-- Ollama for serving Deepseek-R1 locally.
-- Cursor IDE as the MCP host.
+## Features
 
----
-## Setup and installations
+- 🤖 Natural Language Stock Analysis
+- 📈 Real-time Stock Data Visualization
+- 📊 Interactive Plotting
+- 🔄 Multi-Agent Workflow using CrewAI
+- 🧠 Local LLM Integration with Deepseek-R1
 
-**Install Ollama**
+## Prerequisites
 
+1. **Python 3.12** or later
+2. **Conda** for environment management
+3. **Claude Desktop** application
+4. **Ollama** for running Deepseek-R1 locally
+
+## Installation
+
+1. **Create and activate conda environment:**
 ```bash
-# Setting up Ollama on linux
-curl -fsSL https://ollama.com/install.sh | sh
-
-# Pull the Deepseek-R1 model
-ollama pull deepseek-r1
+conda create -n financial-analyst python=3.12
+conda activate financial-analyst
 ```
 
-**Install Dependencies**
+2. **Install dependencies:**
+```bash
+pip install crewai crewai-tools ollama mcp pydantic yfinance pandas matplotlib
+```
 
-   Ensure you have Python 3.12 or later installed.
 
-   You can use uv to directly install the required dependencies (recommended).
-   ```bash
-    uv sync
-   ```
+## Configuration
 
-   Or you can also use pip to install the following dependencies to your local environment.
-   ```bash
-   pip install crewai crewai-tools ollama mcp pydantic yfinance pandas matplotlib
-   ```
+1. **Claude Desktop Setup:**
+- Open Claude Desktop Settings
+- Navigate to MCP section
+- Add new global MCP server with this configuration:
 
----
-
-## Run the project
-
-First, set up your MCP server as follows:
-- Go to Cursor settings
-- Select MCP 
-- Add new global MCP server.
-
-In the JSON file, add this:
 ```json
 {
     "mcpServers": {
         "financial-analyst": {
-         "command": "uv",
+            "command": "<path-to-conda-env>/python.exe",
             "args": [
-                "--directory",
-                "absolute/path/to/project_root",
-                "run",
-                "server.py"
-            ]
+                "<path-to-project>/server.py"
+            ],
+            "env": {
+                "PYTHONPATH": "<path-to-project>"
+            }
         }
     }
 }
 ```
 
-You should now be able to see the MCP server listed in the MCP settings.
+Replace the placeholders:
+- `<path-to-conda-env>`: Path to Python in your conda environment (e.g., `C:\\Users\\username\\miniconda3\\envs\\financial-analyst\\python.exe`)
+- `<path-to-project>`: Path to this project folder
 
-In Cursor MCP settings make sure to toggle the button to connect the server to the host. Done! Your server is now up and running. 
+2. **Enable the Server:**
+- In Claude Desktop MCP settings
+- Toggle the button to connect to the financial-analyst server
 
-You can now chat with Cursor and analyze stock market data. Simply provide the stock symbol and timeframe you want to analyze, and watch the magic unfold.
+## Usage
 
-**Example queries**:
-- "Show me Tesla's stock performance over the last 3 months"
-- "Compare Apple and Microsoft stocks for the past year"
-- "Analyze the trading volume of Amazon stock for the last month"
+Simply chat with Claude and ask questions about stocks. Example queries:
 
----
+1. **Single Stock Analysis:**
+   - "Show me Tesla's stock performance over the last 3 months"
+   - "Analyze Amazon's trading volume for the past month"
 
-## 📬 Stay Updated with Our Newsletter!
-**Get a FREE Data Science eBook** 📖 with 150+ essential lessons in Data Science when you subscribe to our newsletter! Stay in the loop with the latest tutorials, insights, and exclusive resources. [Subscribe now!](https://join.dailydoseofds.com)
+2. **Comparative Analysis:**
+   - "Compare Apple and Microsoft stocks for the past year"
+   - "Show me price trends of NVIDIA vs AMD this year"
 
-[![Daily Dose of Data Science Newsletter](https://github.com/patchy631/ai-engineering/blob/main/resources/join_ddods.png)](https://join.dailydoseofds.com)
+3. **Volume Analysis:**
+   - "Plot the trading volume of Google stock for Q1"
+   - "Show me unusual volume patterns in Meta stock"
 
----
+## How it Works
 
-## Contribution
+1. Your query is processed by a specialized CrewAI workflow
+2. Multiple AI agents collaborate to:
+   - Parse your request
+   - Generate visualization code
+   - Execute and validate the analysis
+3. Results are displayed through Claude Desktop
 
-Contributions are welcome! Please fork the repository and submit a pull request with your improvements.
+## Project Structure
+
+- `server.py`: MCP server implementation
+- `finance_crew.py`: CrewAI workflow and agent definitions
+- `building-financial-analyst.ipynb`: Development notebook
+
+## Troubleshooting
+
+1. **Connection Issues:**
+   - Verify conda environment is active
+   - Check paths in Claude Desktop config
+   - Ensure Ollama is running
+
+2. **Visualization Errors:**
+   - Confirm matplotlib installation
+   - Check if save_code permissions are correct
+
+## Contributing
+
+Contributions are welcome! Please:
+1. Fork the repository
+2. Create a feature branch
+3. Submit a pull request
