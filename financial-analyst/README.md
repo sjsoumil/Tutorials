@@ -58,8 +58,8 @@ Replace the placeholders:
 - `<path-to-project>`: Path to this project folder
 
 2. **Enable the Server:**
-- In Claude Desktop MCP settings
-- Toggle the button to connect to the financial-analyst server
+- In the Claude Desktop MCP settings
+- Toggle the button to connect to the financial analyst server
 
 ## Usage
 
@@ -97,7 +97,7 @@ Simply chat with Claude and ask questions about stocks. Example queries:
 1. **Connection Issues:**
    - Verify conda environment is active
    - Check paths in Claude Desktop config
-   - Ensure Ollama is running
+   - Ensure Docker is running
 
 2. **Visualization Errors:**
    - Confirm matplotlib installation
@@ -109,4 +109,5 @@ Contributions are welcome! Please:
 1. Fork the repository
 2. Create a feature branch
 3. Submit a pull request
+
 
