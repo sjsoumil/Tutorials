@@ -1,0 +1,189 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Ad Poster",
+        "formDescription": "Make Ad poster for your product",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Product Description"
+            },
+            {
+              "fieldLabel": "Product Image",
+              "fieldType": "file"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "02cfd007-0b95-442b-9d37-f9a2b6f6cb16",
+      "name": "On form submission",
+      "webhookId": "1310884c-28c0-4b35-a12b-af1b6e5fab74"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('On form submission').item.json['Product Description'] }}",
+        "options": {
+          "systemMessage": "Role: You are a professional creative director and an expert prompt engineer for AI image generators (like Midjourney, DALL-E, etc.). Your task is to generate a highly detailed, effective prompt for a professional ad poster image.\n\nInput: You will be given a product description.\n\nTask:\n\nAnalyze the Product: Study the provided product description. Identify the product's core identity: its key features, target audience, and, most importantly, its unique visual style, mood, and tone.\n\nTranslate to Visuals: Translate the product's essence into specific visual keywords. Consider the following:\n\nSubject: How should the product be positioned and highlighted? Is it a close-up, a macro shot, or a wider scene?\n\nComposition: What layout would create a compelling and professional ad poster?\n\nLighting: What kind of lighting best represents the product's mood? (e.g., soft, dramatic, high-key, cinematic).\n\nColor Palette: What colors should dominate the image to match the product's brand?\n\nStyle: What aesthetic keywords best capture the product's look? (e.g., sleek, futuristic, minimalist, whimsical, retro, photorealistic).\n\nAtmosphere: What is the overall mood or feeling the ad should evoke? (e.g., innovative, luxurious, comforting, energetic).\n\nGenerate the Final Prompt: Create a single, continuous, and powerful prompt designed to be directly copy-pasted into an image generator. The prompt should start with the subject and move to stylistic and technical details. Do not include any commentary or explanations before or after the prompt. The final output must be only the prompt itself.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        448,
+        0
+      ],
+      "id": "4264a079-3414-461e-b5a5-7d2e505b4e67",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        352,
+        208
+      ],
+      "id": "0941995a-eb95-4455-9b90-ad39312c7712",
+      "name": "Google Gemini Chat Model"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-goog-api-key",
+              "value": "YOUR API KEY"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contents\": [\n    {\n      \"parts\": [\n        {\n          \"inline_data\": {\n            \"mime_type\": \"image/png\",\n            \"data\": \"{{ $('Extract from File').item.json.data }}\"\n          }\n        },\n        {\n          \"text\": \"{{ $json.output }}\"\n        }\n      ]\n    }\n  ],\n  \"generationConfig\": {\n    \"responseModalities\": [\n      \"IMAGE\"\n    ]\n  }\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        800,
+        0
+      ],
+      "id": "306a992e-0a47-45ef-82d8-3391f825f7f5",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "binaryPropertyName": "Product_Image",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "65146d8e-80e2-488f-bac8-abd97ddb7937",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "candidates[0].content.parts[0].inlineData.data",
+        "binaryPropertyName": "Output",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        1008,
+        0
+      ],
+      "id": "a4014f0c-c361-44d9-a187-a75a107cc72f",
+      "name": "Convert to File"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "134eddb9-11fa-4221-99fd-db848832e401",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d7af9d14accfa67fbb21dee9af6ca916b2567930202dc432e07430b66d61dfc0"
+  },
+  "id": "sXitrkIuoB14r3KQ",
+  "tags": []
+}
